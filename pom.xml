@@ -4,19 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>recommedSystem</artifactId>
-    <version>1.0.0T</version>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <groupId>org.demo</groupId>
+    <artifactId>recommend-system</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
         <repository>
-            <id>my-repo</id>
-            <url>https://myrepo.com/releases</url>
+            <id>github</id>
+            <name>GitHub AtriLux Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/AtriLux/recommendSystem</url>
         </repository>
     </distributionManagement>
 
     <properties>
+        <java.version>11</java.version>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
     </properties>
