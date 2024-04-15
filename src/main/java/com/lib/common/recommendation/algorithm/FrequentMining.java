@@ -1,8 +1,8 @@
-package com.lib.Recommendation.Algorithm;
+package com.lib.common.recommendation.algorithm;
 
-import com.lib.Recommendation.ParamWithRange;
-import com.lib.Vectors.AbstractVector;
-import com.lib.Vectors.FrequentMiningVector;
+import com.lib.common.recommendation.ParamWithRange;
+import com.lib.common.vectors.AbstractVector;
+import com.lib.common.vectors.FrequentMiningVector;
 
 import java.util.*;
 

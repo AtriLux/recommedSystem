@@ -1,22 +1,44 @@
-package com.lib;
+package com.lib.common;
+
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Entity
+@Table(name="lib")
 public class RecommendationObject {
-    private final int id;
+    @Id
+    @GeneratedValue(generator = "increment")
+    @Column(name="object_id")
+    private int object_id;
+
+    @Transient // TODO change to '@ElementCollection/@CollectionTable/@MapKeyColumn/@Column' when strParams will be useful
     private Map<String, String> strParams = new HashMap<>();
+
+    @ElementCollection
+    @CollectionTable(name = "object_param_value_mapping",
+            joinColumns = {@JoinColumn(name = "object_id", referencedColumnName = "object_id")})
+    @MapKeyColumn(name = "param")
+    @Column(name = "value")
     private Map<String, Integer> numParams = new HashMap<>();
 
-    public RecommendationObject(int id, Map<String, String> strParams, Map<String, Integer> numParams) {
-        this.id = id;
+    @Transient
+    private int innerId;
+
+    public RecommendationObject(int innerId, Map<String, String> strParams, Map<String, Integer> numParams) {
+        this.innerId = innerId;
         this.strParams.putAll(strParams);
         this.numParams.putAll(numParams);
     }
 
     public RecommendationObject(int id) {
-        this.id = id;
+        this.innerId = id;
+    }
+
+    public RecommendationObject() {
+
     }
 
     public void addNumParam(Map<String, Integer> numParams) {
@@ -54,14 +76,18 @@ public class RecommendationObject {
     @Override
     public String toString() {
         return "RecommendationObject{" +
-                "id=" + id +
+                "id=" + innerId +
                 ", numParams=" + numParams +
                 ", strParams=" + strParams +
                 '}';
     }
 
+    public int getInnerId() {
+        return innerId;
+    }
+
     public int getId() {
-        return id;
+        return object_id;
     }
 
     public Map<String, String> getStrParams() {

@@ -1,8 +1,8 @@
-package com.lib.Recommendation.Algorithm;
+package com.lib.common.recommendation.algorithm;
 
-import com.lib.Range;
-import com.lib.Vectors.AbstractVector;
-import com.lib.Vectors.CustomVector;
+import com.lib.common.Range;
+import com.lib.common.vectors.AbstractVector;
+import com.lib.common.vectors.CustomVector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class Custom {
     private static boolean debug = false;
 
-    public static boolean isMaxDegree(CustomVector object, CustomVector profile, Map<String, Range> range, double maxDegree) {
+    public static boolean isMaxDegree(CustomVector object, CustomVector profile, ArrayList<Range> range, double maxDegree) {
         profile.resize(range);
 
         findDegree(object, profile);
@@ -19,7 +19,7 @@ public class Custom {
         return object.getDegree() <= maxDegree;
     }
 
-    public static void sortByDegree(ArrayList<AbstractVector> list, CustomVector profile, Map<String, Range> range) {
+    public static void sortByDegree(ArrayList<AbstractVector> list, CustomVector profile, ArrayList<Range> range) {
         profile.resize(range);
 
         for (AbstractVector object : list) {
