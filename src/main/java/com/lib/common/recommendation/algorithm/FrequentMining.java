@@ -68,7 +68,7 @@ public class FrequentMining {
 
         if (debug) printMap(basisTemplate);
 
-        for (int i = 1; i < order; i++) {
+        for (int i = 1; i < order && i < rangeCnt.size(); i++) {
             template = findSupport(profile, rangeCnt, template);
             template = apriori(template, aprioriMinSupport);
 
@@ -77,6 +77,8 @@ public class FrequentMining {
         }
 
         template = findLift(basisTemplate, template);
+
+        if (debug) printMap(template);
 
         return template;
     }

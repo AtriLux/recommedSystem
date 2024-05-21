@@ -44,7 +44,6 @@ public abstract class DataAccessObject<T> {
         T result = null;
         try {
             result = typedQuery.getSingleResult();
-            System.out.println("find single result by " + parameter);
         }
         catch (Exception e) {
             try {

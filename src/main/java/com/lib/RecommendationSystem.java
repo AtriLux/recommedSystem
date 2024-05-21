@@ -28,10 +28,10 @@ public class RecommendationSystem {
     private double maxDegree = (1 - minSimilarity) * 90; // interval => [0;90]
     private final Map<String, Integer> rangeCnt;
 
-    private static CustomProfileDao customProfileDao;
-    private static FrequentMiningProfileDao frequentMiningProfileDao;
-    private static RangeDao rangeDao;
-    private static RecommendationObjectDao recommendationObjectDao;
+    private static CustomProfileDao customProfileDao = null;
+    private static FrequentMiningProfileDao frequentMiningProfileDao = null;
+    private static RangeDao rangeDao = null;
+    private static RecommendationObjectDao recommendationObjectDao = null;
 
     public RecommendationSystem(int id,
                                 Map<String, Integer> rangeCnt,
@@ -46,13 +46,13 @@ public class RecommendationSystem {
     public RecommendationSystem(int id,
                                 Map<String, Integer> rangeCnt,
                                 int order,
-                                double apriori,
+                                double similarity,
                                 EntityManagerFactory entityManagerFactory,
                                 EntityManager entityManager) {
         this.id = id;
         this.rangeCnt = rangeCnt;
         this.order = order;
-        this.minSimilarity = apriori;
+        this.minSimilarity = similarity;
 
         if (minSimilarity < 0) minSimilarity = 0;
         if (minSimilarity > 1) minSimilarity = 1;
@@ -64,7 +64,7 @@ public class RecommendationSystem {
     public RecommendationSystem(int id,
                                 Map<String, Integer> rangeCnt,
                                 int order,
-                                double apriori,
+                                double similarity,
                                 AlgorithmType algorithmType,
                                 EntityManagerFactory entityManagerFactory,
                                 EntityManager entityManager) {
@@ -72,7 +72,7 @@ public class RecommendationSystem {
         this.rangeCnt = rangeCnt;
         this.algorithmType = algorithmType;
         this.order = order;
-        this.minSimilarity = apriori;
+        this.minSimilarity = similarity;
 
         if (minSimilarity < 0) minSimilarity = 0;
         if (minSimilarity > 1) minSimilarity = 1;
@@ -99,10 +99,10 @@ public class RecommendationSystem {
         Hibernate.setEntityManagerFactory(entityManagerFactory);
         Hibernate.setEntityManager(entityManager);
 
-        customProfileDao = new CustomProfileDao();
-        frequentMiningProfileDao = new FrequentMiningProfileDao();
-        rangeDao = new RangeDao();
-        recommendationObjectDao = new RecommendationObjectDao();
+        if (customProfile == null) customProfileDao = new CustomProfileDao();
+        if (frequentMiningProfileDao == null) frequentMiningProfileDao = new FrequentMiningProfileDao();
+        if (rangeDao == null) rangeDao = new RangeDao();
+        if (recommendationObjectDao == null) recommendationObjectDao = new RecommendationObjectDao();
 
         rangeList.addAll(rangeDao.findAll());
         if (rangeList.isEmpty()) {
@@ -137,6 +137,23 @@ public class RecommendationSystem {
             template = FrequentMining.findTemplate(frequentMiningProfile, rangeCnt, order, minSimilarity);
         }
     }
+
+    public void addObject(RecommendationObject object, int weight) {
+        if (object != null) {
+            updateRange(object);
+
+            customProfile.addToProfile(object, weight);
+
+            FrequentMiningVector fVector = new FrequentMiningVector(object, rangeList, id);
+            frequentMiningProfile.add(fVector);
+
+            template = FrequentMining.findTemplate(frequentMiningProfile, rangeCnt, order, minSimilarity);
+
+            recommendationObjectDao.insert(object);
+            frequentMiningProfileDao.insert(fVector);
+            customProfileDao.update(customProfile);
+        }
+    }
     
     public void addObject(RecommendationObject object) {
         if (object != null) {
@@ -156,6 +173,12 @@ public class RecommendationSystem {
     }
     
     public boolean isObjectRecommend(RecommendationObject object) {
+        if ((frequentMiningProfile.isEmpty()
+             && customProfile.getWeight() == 0)
+             || algorithmType == AlgorithmType.None) {
+            return true;
+        }
+
         AbstractVector vector;
 
         if (updateRange(object))
@@ -177,6 +200,12 @@ public class RecommendationSystem {
     }
 
     public ArrayList<RecommendationObject> filterRecommendObjects(ArrayList<RecommendationObject> objects) {
+        if ((frequentMiningProfile.isEmpty()
+             && customProfile.getWeight() == 0)
+             || algorithmType == AlgorithmType.None) {
+            return objects;
+        }
+
         ArrayList<RecommendationObject> list = new ArrayList<>();
 
         boolean isChange = false;
@@ -203,6 +232,12 @@ public class RecommendationSystem {
     }
 
     public ArrayList<RecommendationObject> sortRecommendObjects(ArrayList<RecommendationObject> objects) {
+        if ((frequentMiningProfile.isEmpty()
+             && customProfile.getWeight() == 0)
+             || algorithmType == AlgorithmType.None) {
+            return objects;
+        }
+
         ArrayList<AbstractVector> list = new ArrayList<>();
         boolean isChange = false;
         for (RecommendationObject object : objects) {
@@ -268,7 +303,6 @@ public class RecommendationSystem {
 
         if (isChange) {
             for (Range range : rangeList) {
-                System.out.println("update range");
                 rangeDao.update(range);
             }
         }

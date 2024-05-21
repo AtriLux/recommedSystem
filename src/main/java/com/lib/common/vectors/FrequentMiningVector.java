@@ -11,8 +11,6 @@ import java.util.Map;
 @Entity
 @Table(name="frequent_mining_profile")
 public class FrequentMiningVector extends AbstractVector {
-    @Column(name="profile_id")
-    private int profile_id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "object_id")
     RecommendationObject object;

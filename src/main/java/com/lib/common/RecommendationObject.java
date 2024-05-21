@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name="lib")
+@Table(name="objects")
 public class RecommendationObject {
     @Id
     @GeneratedValue(generator = "increment")

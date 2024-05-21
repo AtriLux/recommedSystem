@@ -66,7 +66,7 @@ public class CustomVector extends AbstractVector {
         for (Map.Entry<String, Integer> entry : numParams.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
-            entry.setValue(value + object.getNumParams().get(key));
+            entry.setValue(value + object.getNumParams().get(key) * weight);
         }
         this.weight += weight;
     }
